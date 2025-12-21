@@ -34,7 +34,6 @@ Do mapa usado como exemplo:
 
 #canva: como ja escrevi: sub, sub-sub area
 
-import tkinter
 
 #dados geograficos de portigal
 #https://dados.gov.pt/en/datasets/distritos-de-portugal/?utm_source=chatgpt.com
