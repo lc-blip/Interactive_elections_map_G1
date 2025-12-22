@@ -2,6 +2,7 @@
 #### 1º
 
 NOTA: bd e ficheiros CAOP são muito grandes não me deixou fazer push
+
 script
 
 &nbsp;	1.simpler_geo_db.py: criar sqlite simples; districts(if, name, geom=WKT\_fake
@@ -71,6 +72,7 @@ Traceback (most recent call last):
     lambda e, n=name: self.show_votes(n))
                       ^^^^^^^^^^^^^^^^^^
 TypeError: App.show_votes() takes 1 positional argument but 2 were given
+
 
 
 
