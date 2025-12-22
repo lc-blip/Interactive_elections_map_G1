@@ -1,33 +1,34 @@
-#TASK_B
+# TASK_B
 #### 1º
 
+NOTA: bd e ficheiros CAOP são muito grandes não me deixou fazer push
 script
 
-&nbsp;	simpler\_geo\_db: criar sqlite simples; districts(if, name, geom=WKT\_fake
+&nbsp;	1.simpler_geo_db.py: criar sqlite simples; districts(if, name, geom=WKT\_fake
 
 (foto slqlite3 terminal)
 
 
 
-ex\_discrit\_parsing:
+ex_district_parsing.py:
 
 aqui é comentar e simplificar grande parte do que a professora deu (foto 2 quadrados cinzentos, botão "Back" esta lá mas não funciona) 
 
 
 
-##### 2º 
+#### 2º 
 
 WKT\_fake-> WKT\_real:
 
 
 
-|||NOTA: nuts1: é a região, em vez de definirmos com código manual podemos vir daqui; *nas camadas municípios também temos* nuts2: também ficava fofo para fazer um gradiente de cores. sub-regiões||||
+|||NOTA: bd de ficheiros CAOP: nuts1: é a região, em vez de definirmos com código manual podemos vir daqui; *nas camadas municípios também temos* nuts2: também ficava fofo para fazer um gradiente de cores. sub-regiões||||
 
 (foto tabela de atributos através de software QGIS: confirma 18 distritos no continente coluna "distrito" a utilizar)
 
 script 
 
-&nbsp;	real\_geo\_db: 
+&nbsp;	2.district_geo_db.py: 
 
 &nbsp;	CAOP dá-nos ficheiros do tipo .gpkg	
 
@@ -49,16 +50,17 @@ ex\_discrit\_parsing\_real: descometei e acrescentei onde  necessário REGION; m
 
 
 
-3º: Municipios YUPIIII
+#### 3º: Municipios YUPIIII
 
 
 
-script:	mun\_geo\_db: à anterior db já criada, acrescenta a tabela municipalities sem mexer na tabela districts que a script anterior faz
+script:	mun\_geo\_db.py: à anterior db já criada, acrescenta a tabela municipalities sem mexer na tabela districts que a script anterior faz
 
 &nbsp;	(4/5 fotos de sqlite3 terminal)
 
-&nbsp;	add\_municipios: descomentei tudo- nao temos, nem vamos freguesias (tabela parish i think…) tirar/voltar a comentar da stora
+&nbsp;	add\_municipios: descomentei tudo- nao temos, nem vamos freguesias (tabela/funçoes c/"parish" i think…) tirar/voltar a comentar da stora
 
+#### 4º
 -show votes(): TODO implementar com CNE abrir as tabelas
 -back(): TODO sei la, o botão nao esta a funcionar!
 Traceback (most recent call last):
@@ -69,4 +71,5 @@ Traceback (most recent call last):
     lambda e, n=name: self.show_votes(n))
                       ^^^^^^^^^^^^^^^^^^
 TypeError: App.show_votes() takes 1 positional argument but 2 were given
+
 
