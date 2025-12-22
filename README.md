@@ -1,4 +1,4 @@
-# TASK_B
+## TASK_B
 #### 1º
 
 NOTA: bd e ficheiros CAOP são muito grandes não me deixou fazer push
@@ -71,5 +71,6 @@ Traceback (most recent call last):
     lambda e, n=name: self.show_votes(n))
                       ^^^^^^^^^^^^^^^^^^
 TypeError: App.show_votes() takes 1 positional argument but 2 were given
+
 
 
