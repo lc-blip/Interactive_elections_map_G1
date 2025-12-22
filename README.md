@@ -1,4 +1,5 @@
-##### 1º
+#TASK_B
+#### 1º
 
 script
 
@@ -68,3 +69,4 @@ Traceback (most recent call last):
     lambda e, n=name: self.show_votes(n))
                       ^^^^^^^^^^^^^^^^^^
 TypeError: App.show_votes() takes 1 positional argument but 2 were given
+
