@@ -378,7 +378,7 @@ class App:
                         pts_ext.extend([X, Y])
                     pid = draw_polygon(self.canvas, pts_ext, fill=fill)
                     if pid:
-                        # Click município -> freguesias
+                        # Click município
                         self.canvas.tag_bind(pid, "<Button-1>",
                                             lambda e, n=name: self.show_votes(n))
                     for hole in rings[1:]:
@@ -389,6 +389,7 @@ class App:
                         draw_polygon(self.canvas, pts_h, fill=BG_COLOR)
     # ---------- events ----------
     def on_click_district(self, district_name):
+        print(district_name)
         self.draw_municipalities(district_name)
     def on_back(self):
            # if self.level == "parishes":
@@ -400,8 +401,8 @@ class App:
                 self.draw_districts()
             else:
                 pass
-    def show_votes(municipy_name):
-        pass
+    def show_votes(self, municipy_name):
+        print(municipy_name)
     
 """
     def draw_parishes(self, district_name, municipality_name):
