@@ -62,16 +62,10 @@ script:	mun\_geo\_db.py: à anterior db já criada, acrescenta a tabela municipa
 &nbsp;	add\_municipios: descomentei tudo- nao temos, nem vamos freguesias (tabela/funçoes c/"parish" i think…) tirar/voltar a comentar da stora
 
 #### 4º
--show votes(): TODO implementar com CNE abrir as tabelas
--back(): TODO sei la, o botão nao esta a funcionar!
-Traceback (most recent call last):
-  File "/usr/lib/python3.12/tkinter/__init__.py", line 1967, in __call__
-    return self.func(*args)
-           ^^^^^^^^^^^^^^^^
-  File "/home/soim/task_B/app/3.add_municipios.py", line 383, in <lambda>
-    lambda e, n=name: self.show_votes(n))
-                      ^^^^^^^^^^^^^^^^^^
-TypeError: App.show_votes() takes 1 positional argument but 2 were given
+-Madeira e Açores: nao aparece nada ao clicar nos distritos
+-show votes(): TODO implementar com CNE abrir as tabelas, agora esta so pass
+-back(): esta a funcionar esta so muitoooo lento 
+
 
 
 
