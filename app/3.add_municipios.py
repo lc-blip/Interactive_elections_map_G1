@@ -319,10 +319,16 @@ class App:
                     for x, y in rings[0]:
                         X, Y = project(x, y)
                         pts.extend([X, Y + TOP_H])
-                    draw_polygon(
+                    pid = draw_polygon(
                         self.canvas, pts,
                         fill=REGION_COLORS.get("Açores", DEFAULT_FILL)
                     )
+                    if pid:
+                        self.canvas.tag_bind(
+                        pid, "<Button-1>",
+                        lambda e, n=name: self.on_click_district(n)
+                    )
+
 
         # -------- MADEIRA (baixo direita) --------
         if made:
@@ -341,11 +347,15 @@ class App:
                     for x, y in rings[0]:
                         X, Y = project(x, y)
                         pts.extend([X + AZORES_W, Y + TOP_H])
-                    draw_polygon(
+                    pid = draw_polygon(
                         self.canvas, pts,
                         fill=REGION_COLORS.get("Madeira", DEFAULT_FILL)
                     )
-
+                    if pid:
+                        self.canvas.tag_bind(
+                        pid, "<Button-1>",
+                        lambda e, n=name: self.on_click_district(n)
+                    )
 
     def draw_municipalities(self, district_name):
             self.level = "municipalities"
