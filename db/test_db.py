@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # --- CONFIGURATION ---
-DB_FILE = 'eleicoes_final.db'
+DB_FILE = 'eleicoes_final_v4.db'
 
 def test_database():
     print(f"--- TESTING DATABASE: {DB_FILE} ---\n")
