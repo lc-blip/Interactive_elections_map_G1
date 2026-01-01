@@ -7,7 +7,7 @@ As dependências necessárias:
 
     >>  pip install pandas openpyxl matplotlib fiona shapely
 
-!Todos os comandos devem ser executados a partir da raiz do repositório, ou adaptados cosuante a profundidade nos directórios!
+!Todos os comandos que partilhamos devem ser executados a partir da raiz do repositório, ou adaptados cosuante a localização no repositório!
 
 1. Criar a Base de Dados 
 
@@ -19,9 +19,9 @@ Resultado: Criação do ficheiro /db/elections.db.
 
 Download dos ficheiros da CAOP:
     https://www.dgterritorio.gov.pt/cartografia/cartografia-tematica/caop
-(Nota: pode estar em qualquer local do repositorio, mas aconselhamos cada pasta(Continetal/Madeira/Açores) na root)~
+    OBRIGATÓRIO: Colocar na root do repositório, as pastas extraidas (ex:CAOP_Continente_2024_1-gpkg) com os ficheiros ou os ficheiros(ex: ArqAcores_GCentral_GOriental_CAOP2024_1.gpkg) 
 
-Este passo processa os ficheiros da CAOP para extrair os polígonos dos distritos e municípios em formato WKT e guarda-os na base de dados para serem usados pelo mapa.
+Este passo extrai os polígonos dos distritos e municípios em formato WKT e guarda-os na base de dados para serem usados pelo mapa.
     >> python etl/built_geometry.py
 
 3. Iniciar a Aplicação Gráfica
@@ -32,8 +32,9 @@ Após a base de dados estar completa com dados e geometria, pode iniciar a inter
 Funcionalidades da GUI
 Mapa Interativo:
     Clique num distrito para fazer zoom e ver os municípios desse distrito. Clique no botão "Back" para retornar à vista nacional.
-    Num distrito, clique sobre um municipio para ver os resultados dinâmicos correspondentes
+    Num distrito, clique sobre um municipio para ver os resultados dinâmicos correspondentes.
 
 Resultados Dinâmicos: Ao selecionar um distrito, a tabela mostra os votos e mandatos, enquanto o gráfico de barras destaca a distribuição de votos.
 
-Interatividade: Passe o rato sobre as barras do gráfico para ver os valores exatos através de tooltips.
+
+Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem exta de votos.
