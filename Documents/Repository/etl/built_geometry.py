@@ -13,7 +13,7 @@ CAOP_PATH = [
     "CAOP_Continente_2024_1-gpkg",
     "CAOP_RAA_2024_1-gpkg",
     "CAOP_RAA_2024_1-gpkg",
-    "CAOP_RAM_2024_1-gpkg/",
+    "CAOP_RAM_2024_1-gpkg",
 ]
 
 GPKG_PATH = [
@@ -111,7 +111,7 @@ def main():
 
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
-
+    cur.execute("PRAGMA foreign_keys = ON;")
     load_district_shapes(cur)
     load_municipality_shapes(cur)
 
