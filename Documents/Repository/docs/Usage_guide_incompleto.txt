@@ -1,8 +1,0 @@
-### Usage Guide ##
-
-
-# 1. Criar a Base de Dados #
-Executar o script de ETL:
-python etl/etl.py
-
-# 2.
