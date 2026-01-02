@@ -185,63 +185,79 @@ class App:
     def __init__(self):
         self.level = "districts"
         self.current_fig = None
-        self.current_canvas = None
-
+        
         self.root = tk.Tk()
         self.root.title("Portugal — Resultados Eleitorais")
+        # Definir um tamanho inicial razoável
+        self.root.geometry("1400x900")
 
         # Header
-        header = tk.Frame(self.root)
-        header.pack(fill="x", padx=10, pady=10)
+        header = tk.Frame(self.root, bg="#f0f0f0", height=50)
+        header.pack(fill="x", side="top")
 
-        self.title_lbl = tk.Label(header, font=("Arial", 14, "bold"))
-        self.title_lbl.pack(side="left")
+        self.back_btn = tk.Button(header, text="⬅ Voltar ao Mapa Geral",
+                                 state="disabled", command=self.on_back,
+                                 font=("Arial", 10))
+        self.back_btn.pack(side="left", padx=10, pady=10)
 
-        self.back_btn = tk.Button(header, text="Back",
-                                  state="disabled", command=self.on_back)
-        self.back_btn.pack(side="right")
+        self.title_lbl = tk.Label(header, font=("Arial", 16, "bold"), bg="#f0f0f0")
+        self.title_lbl.pack(side="left", expand=True)
 
-        # Layout
-        main = tk.Frame(self.root)
-        main.pack(fill="both", expand=True)
+        # Content Area
+        self.main_container = tk.Frame(self.root)
+        self.main_container.pack(fill="both", expand=True)
 
-        main.columnconfigure(0, weight=3)
-        main.columnconfigure(1, weight=2)
+        # Mapa (Esquerda)
+        self.map_frame = tk.Frame(self.main_container, bg="white", borderwidth=1, relief="sunken")
+        self.map_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-        self.map_frame = tk.Frame(main)
-        self.map_frame.grid(row=0, column=0, sticky="nsew")
-
-        self.results_frame = tk.Frame(main)
-        self.results_frame.grid(row=0, column=1, sticky="nsew")
-
-        self.canvas = tk.Canvas(self.map_frame,
-                                width=CANVAS_W, height=CANVAS_H,
-                                bg="white")
+        self.canvas = tk.Canvas(self.map_frame, bg="white", highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
 
+        # Resultados (Direita) - Largura fixa para não "empurrar" o mapa
+        self.results_frame = tk.Frame(self.main_container, width=500)
+        self.results_frame.pack(side="right", fill="both", padx=10, pady=5)
+        self.results_frame.pack_propagate(False) # Mantém a largura fixa
+
+        self.root.update()
         self.draw_districts()
         self.root.mainloop()
-
 
     def draw_districts(self):
         self.level = "districts"
         self.back_btn.config(state="disabled")
-   #     self.title_lbl.config(text="Distritos")
+        self.title_lbl.config(text="Portugal — Mapa Geral") # Título padrão
         self.canvas.delete("all")
         self.clear_results()
 
+        # 1. Obter o tamanho atual real da janela/canvas
+        # Se for a primeira vez (valor < 10), usamos as constantes como fallback
+        curr_w = self.canvas.winfo_width()
+        curr_h = self.canvas.winfo_height()
+        if curr_w < 10: curr_w = CANVAS_W
+        if curr_h < 10: curr_h = CANVAS_H
+
+        # 2. Recalcular proporções baseadas no tamanho atual
+        top_h = int(curr_h * 0.65)        # 65% para o Continente
+        bottom_h = curr_h - top_h         # Restante para Ilhas
+        half_w = curr_w // 2              # Divisão entre Açores e Madeira
+
         data = fetch_districts()
 
-        for region, ox, oy, w, h in [
-            ("C", 0, 0, CANVAS_W, TOP_H),
-            ("A", 0, TOP_H, AZORES_W, BOTTOM_H),
-            ("M", AZORES_W, TOP_H, MADEIRA_W, BOTTOM_H),
-        ]:
+        # 3. Ajustar as coordenadas de origem (ox, oy) e dimensões (w, h)
+        regions_config = [
+            ("C", 0, 0, curr_w, top_h),       # Continente
+            ("A", 0, top_h, half_w, bottom_h), # Açores (Canto inferior esquerdo)
+            ("M", half_w, top_h, half_w, bottom_h), # Madeira (Canto inferior direito)
+        ]
+
+        for region, ox, oy, w, h in regions_config:
             items = [(c, d) for c, d in data.items() if d["region"] == region]
             if not items:
                 continue
 
             all_polys = [p for _, d in items for p in d["polys"]]
+            # O projector agora usa a largura (w) e altura (h) calculadas dinamicamente
             proj = projector(*bounds(all_polys), w, h)
 
             for code, info in items:
@@ -254,7 +270,8 @@ class App:
                     pid = self.canvas.create_polygon(
                         *pts,
                         fill=REGION_COLORS[region],
-                        outline=OUTLINE_COLOR
+                        outline=OUTLINE_COLOR,
+                        activefill="#5da5da" # Feedback visual ao passar o rato
                     )
                     self.canvas.tag_bind(
                         pid, "<Button-1>",
@@ -265,7 +282,7 @@ class App:
     def show_district(self, code, name):
         self.level = "municipalities"
         self.back_btn.config(state="normal")
-        self.title_lbl.config(text=f"Município:{name}")
+        self.title_lbl.config(text=f"Distrito:{name}")
 
         self.update_results(f"{name}", votes_by_district(code))
         self.draw_municipalities(code)
@@ -273,9 +290,16 @@ class App:
     def draw_municipalities(self, dist):
         self.canvas.delete("all")
         data = fetch_municipalities(dist)
-        proj = projector(*bounds([p for _,_,ps in data for p in ps]),
-                         CANVAS_W, CANVAS_H)
+# Pega todos os polígonos do distrito selecionado para calcular o zoom ideal
+        all_ps = [p for _, _, ps in data for p in ps]
+        if not all_ps: return
 
+        # O projector agora foca apenas nos limites deste distrito
+        # Usamos winfo_width/height para adaptar ao tamanho real da janela
+        w = self.canvas.winfo_width() or CANVAS_W
+        h = self.canvas.winfo_height() or CANVAS_H
+        
+        proj = projector(*bounds(all_ps), w, h)
         for code, name, polys in data:
             for poly in polys:
                 pts = []
@@ -288,19 +312,22 @@ class App:
                     fill=MUNICIPALITY_FILL,
                     outline=OUTLINE_COLOR,
                     width=1,
-                    stipple="gray50"
+                    activefill="#6699cc" # Efeito de hover
                 )
                 self.canvas.tag_bind(
                     pid, "<Button-1>",
                     lambda e, c=code, n=name:
-                        self.update_results(f"Resultados — {n}",
+                        self.update_results(f"{n}",
                                           votes_by_municipality(c))
                 )
 
 
     def clear_results(self):
-        for w in self.results_frame.winfo_children():
-            w.destroy()
+        # 1. Remove todos os widgets (tabela, botões, labels) do painel lateral
+        for child in self.results_frame.winfo_children():
+            child.destroy()
+        
+        # 2. Fecha a figura do Matplotlib na memória
         if self.current_fig:
             plt.close(self.current_fig)
             self.current_fig = None
@@ -315,6 +342,7 @@ class App:
             tk.Label(self.results_frame, text="Sem dados para esta seleção").pack()
             return
 
+
         # 2. Create the Table (Treeview) [cite: 41]
         # In your SQL, 'rows' should now be: (Name, Votes, Mandates)
         table_frame = tk.Frame(self.results_frame)
@@ -322,11 +350,10 @@ class App:
 
         columns = ("party", "votes", "seats")
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=8)
-        
+
         self.tree.heading("party", text="Partido / Coligação")
         self.tree.heading("votes", text="Votos")
         self.tree.heading("seats", text="Mandatos")
-        
         self.tree.column("party", width=200)
         self.tree.column("votes", width=80, anchor="e")
         self.tree.column("seats", width=80, anchor="center")
@@ -337,23 +364,31 @@ class App:
         
         self.tree.pack(fill="x", expand=True)
 
-        # 3. Create the Chart [cite: 41, 46]
-        labels = [r[0] for r in rows[:10]]  # Top 10 for readability
+       # 3. Create the Chart
+        labels = [r[0] for r in rows[:10]]
         votes = [r[1] for r in rows[:10]]
 
-        # Use a cleaner Object-Oriented approach for Matplotlib
-        fig, ax = plt.subplots(figsize=(4.5, 4))
+        # Criar um Label do Tkinter para o título (evita que o Matplotlib o corte)
+        chart_title = tk.Label(self.results_frame, text=f"Votos: {title}", 
+                               font=("Arial", 10, "bold"), pady=5)
+        chart_title.pack()
+
+        # Criar a figura com margens automáticas (tight_layout)
+        fig, ax = plt.subplots(figsize=(4.5, 4), dpi=90) # Ajuste o DPI se necessário
         self.current_fig = fig 
         
         colors = BAR_COLORS[:len(labels)]
         ax.barh(labels[::-1], votes[::-1], color=colors[::-1])
-        ax.set_title(f"Distribuição de Votos: {title}", fontsize=10)
-        fig.tight_layout()
+        
+        # Remover o título de dentro do Matplotlib para ganhar espaço
+        # ax.set_title(...) <- Remova esta linha
+        
+        ax.tick_params(axis='both', which='major', labelsize=8) # Letras menores nas barras
+        fig.tight_layout(pad=2.0) # Ajusta as margens para não cortar as legendas à esquerda
 
         canvas = FigureCanvasTkAgg(fig, master=self.results_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True)
-
 
     def on_back(self):
         if self.level == "municipalities":
