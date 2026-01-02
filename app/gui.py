@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -188,10 +187,10 @@ class App:
         
         self.root = tk.Tk()
         self.root.title("Portugal — Resultados Eleitorais")
-        # Definir um tamanho inicial razoável
+        # tamanho inicial da janela
         self.root.geometry("1400x900")
 
-        # Header
+        # HEADER (o que fica sempre definido)
         header = tk.Frame(self.root, bg="#f0f0f0", height=50)
         header.pack(fill="x", side="top")
 
@@ -209,6 +208,7 @@ class App:
         self.main_container = tk.Frame(self.root)
         self.main_container.pack(fill="both", expand=True)
 
+#divisão mapa-resultados:
         # Mapa (Esquerda)
         self.map_frame = tk.Frame(self.main_container, bg="white", borderwidth=1, relief="sunken")
         self.map_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -227,13 +227,13 @@ class App:
 
     def draw_districts(self):
         self.level = "districts"
-        self.back_btn.config(state="disabled")
-        self.title_lbl.config(text="Portugal — Mapa Geral") # Título padrão
+        self.back_btn.config(state="disabled") #neste nivel nao se usa BACK button
+        self.title_lbl.config(text="Portugal — Mapa Geral") 
         self.canvas.delete("all")
         self.clear_results()
 
-        # 1. Obter o tamanho atual real da janela/canvas
-        # Se for a primeira vez (valor < 10), usamos as constantes como fallback
+     
+        # 1ª vez Valores constantes como fallback, senão calcular melhor ajuste de valores
         curr_w = self.canvas.winfo_width()
         curr_h = self.canvas.winfo_height()
         if curr_w < 10: curr_w = CANVAS_W
@@ -249,8 +249,8 @@ class App:
         # 3. Ajustar as coordenadas de origem (ox, oy) e dimensões (w, h)
         regions_config = [
             ("C", 0, 0, curr_w, top_h),       # Continente
-            ("A", 0, top_h, half_w, bottom_h), # Açores (Canto inferior esquerdo)
-            ("M", half_w, top_h, half_w, bottom_h), # Madeira (Canto inferior direito)
+            ("A", 0, top_h, half_w, bottom_h), # Açores ( inferior esquerdo)
+            ("M", half_w, top_h, half_w, bottom_h), # Madeira ( inferior direito)
         ]
 
         for region, ox, oy, w, h in regions_config:
@@ -259,7 +259,6 @@ class App:
                 continue
 
             all_polys = [p for _, d in items for p in d["polys"]]
-            # O projector agora usa a largura (w) e altura (h) calculadas dinamicamente
             proj = projector(*bounds(all_polys), w, h)
 
             for code, info in items:
@@ -273,7 +272,7 @@ class App:
                         *pts,
                         fill=REGION_COLORS[region],
                         outline=OUTLINE_COLOR,
-                        activefill="#5da5da" # Feedback visual ao passar o rato
+                        activefill="#5da5da" # muda cor ao passar o rato "hover"
                     )
                     #zoom by click
                     self.canvas.tag_bind(
@@ -297,8 +296,6 @@ class App:
         all_ps = [p for _, _, ps in data for p in ps]
         if not all_ps: return
 
-        # O projector agora foca apenas nos limites deste distrito
-        # Usamos winfo_width/height para adaptar ao tamanho real da janela
         w = self.canvas.winfo_width() or CANVAS_W
         h = self.canvas.winfo_height() or CANVAS_H
         
@@ -315,7 +312,7 @@ class App:
                     fill=MUNICIPALITY_FILL,
                     outline=OUTLINE_COLOR,
                     width=1,
-                    activefill="#6699cc" # Efeito de hover
+                    activefill="#6699cc"
                 )
                 self.canvas.tag_bind(
                     pid, "<Button-1>",
@@ -326,11 +323,11 @@ class App:
 
 
     def clear_results(self):
-        # 1. Remove todos os widgets (tabela, botões, labels) do painel lateral
+        # 1. Remove todos os widgets (tabela, botões... do painel lateral
         for child in self.results_frame.winfo_children():
             child.destroy()
         
-        # 2. Fecha a figura do Matplotlib na memória
+        # 2. Fecha figuras do Matplotlib
         if self.current_fig:
             plt.close(self.current_fig)
             self.current_fig = None
@@ -339,17 +336,16 @@ class App:
         # 1. Clear previous widgets and explicitly close Matplotlib figures to save memory
         self.clear_results() 
         if self.current_fig:
-            plt.close(self.current_fig) # Explicitly close the figure 
-        self.current_rows = rows      # Guarda dados completos
-        self.current_title = title    # Guarda título para nome ficheiro
-        self.export_button.config(state="normal")  # Ativa botão export
+            plt.close(self.current_fig) # Explicitly close the figure, cnava em si 
+        self.current_rows = rows
+        self.current_title = title 
+        self.export_button.config(state="normal")  # Ativar botão export
         if not rows:
             tk.Label(self.results_frame, text="Sem dados para esta seleção").pack()
             return
 
 
-        # 2. Create the Table (Treeview) [cite: 41]
-        # In your SQL, 'rows' should now be: (Name, Votes, Mandates)
+        # 2. Create the Table (Treeview)
         table_frame = tk.Frame(self.results_frame)
         table_frame.pack(fill="x", padx=10, pady=5)
 
@@ -368,22 +364,18 @@ class App:
         self.tree.pack(fill="x", expand=True)
 
        # 3. Create the Chart
-        labels = [r[0] for r in rows] # tranca aos 10
+        labels = [r[0] for r in rows]
         votes = [r[1] for r in rows]
-
-        # Criar um Label do Tkinter para o título (evita que o Matplotlib o corte)
         chart_title = tk.Label(self.results_frame, text=f"Votos: {title}", 
                                font=("Arial", 10, "bold"), pady=5)
         chart_title.pack()
 
-        # Criar a figura com margens automáticas (tight_layout)
-        fig, ax = plt.subplots(figsize=(5.5, 6), dpi=90) # Ajuste o DPI se necessário
+        fig, ax = plt.subplots(figsize=(5.5, 6), dpi=90)
         self.current_fig = fig 
         
         colors = BAR_COLORS[:len(labels)]
         ax.barh(labels[::-1], votes[::-1], color=colors[::-1])
-        ax.tick_params(axis='both', which='major', labelsize=8) # Letras menores nas barras
-        #fig.tight_layout(pad=2.0) # Ajusta as margens para não cortar as legendas à esquerda
+        ax.tick_params(axis='both', which='major', labelsize=8) 
 
         canvas = FigureCanvasTkAgg(fig, master=self.results_frame)
         canvas.draw()
