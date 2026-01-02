@@ -1,0 +1,70 @@
+## Eleições Autárquicas 2021 - Mapa Interativo
+
+Este projeto é uma ferramenta de visualização de dados das Eleições Autárquicas de 2021 em Portugal. Permite a exploração dos resultados através de um mapa interativo com funcionalidade de drill-down (Distrito -> Município), acompanhado por gráficos e tabelas detalhadas.
+
+# 0. Pré-requisitos
+Certifique-se de que tem o Python 3.x instalado.
+É possível que tenha de criar um ambiente virtual após clonar o repositório para instalar estas packages.
+E as dependências necessárias:
+
+    >>  pip install pandas openpyxl matplotlib fiona shapely
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+ | *NOTA*                                                                                                                                     |
+ | Todos os comandos que partilhamos devem ser executados a partir da raiz do repositório, ou adaptados consoante a localização no repositório |
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 1. Criar a Base de Dados 
+
+Este passo lê os ficheiros Excel oficiais na pasta /data, cria a estrutura de tabelas via SQL e popula a base de dados SQLite.
+    
+    >>  python etl/etl.py
+
+Resultado: Criação do ficheiro /db/elections.db.
+
+# 2. Integrar Geometria WKT
+
+Download dos ficheiros da CAOP diretamente do link:
+    https://www.dgterritorio.gov.pt/cartografia/cartografia-tematica/caop
+##ou##
+Download e unzip dos ficheiros da CAOP:
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_Continente_2024_1-gpkg.zip
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_RAA_2024_1-gpkg.zip
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_RAM_2024_1-gpkg.zip
+    unzip CAOP_Continente_2024_1-gpkg.zip
+    unzip CAOP_RAA_2024_1-gpkg.zip
+    unzip CAOP_RAM_2024_1-gpkg.zip
+--------------------------------------------------------------------------------
+ |Colocar na *root* do repositório:                                           |
+ |    - as pastas extraídas (ex:CAOP_Continente_2024_1-gpkg) com os ficheiros |
+ | OU                                                                         |
+ |    - os ficheiros (ex:ArqAcores_GCentral_GOriental_CAOP2024_1.gpkg)        |
+--------------------------------------------------------------------------------
+
+Este passo extrai os polígonos dos distritos e municípios em formato WKT e guarda-os na base de dados para serem usados pelo mapa.
+    
+    >> python etl/built_geometry.py
+
+-------------------------------------------------------------------------------------------------------------------------------
+ | *Atenção:* se correr novamente etl.py, terá também de correr novamente built_geometry para a base de dados estar completa | 
+-------------------------------------------------------------------------------------------------------------------------------
+
+# 3. Iniciar a Aplicação Gráfica
+
+Após a base de dados estar completa com dados e geometria, pode iniciar a interface:
+
+    >>  python app/gui.py
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+ | *Funcionalidades da GUI*                                                                                                                           |
+ | Mapa Interativo:                                                                                                                                   |
+ |   - Clique num distrito para fazer zoom e ver os municípios desse distrito. Clique no botão "Back" para retornar à vista nacional.                 |
+ |    - Num distrito, clique sobre um município para ver os resultados dinâmicos correspondentes.                                                     |
+ |                                                                                                                                                    |
+ | Resultados Dinâmicos: Ao selecionar um distrito, a tabela mostra os votos e mandatos, enquanto o gráfico de barras destaca a distribuição de votos.|
+ |                                                                                                                                                    |
+ | Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem extra de votos.                                                         |
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
