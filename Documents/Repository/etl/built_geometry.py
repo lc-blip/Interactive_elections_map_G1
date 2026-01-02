@@ -23,7 +23,7 @@ GPKG_PATH = [
     "ArqMadeira_CAOP2024_1.gpkg",
 ]
 
-#checked in QGIS software, how the tables where defined
+#checked in QGIS software, how the layers/tables where defined
 LAYER_DISTRICTS = [
     "cont_distritos",
     "raa_cen_ori_distritos",
@@ -111,10 +111,9 @@ def main():
 
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
-    cur.execute("PRAGMA foreign_keys = ON;")
     load_district_shapes(cur)
     load_municipality_shapes(cur)
-
+    cur.execute("PRAGMA foreign_keys = ON;")
     conn.commit()
     conn.close()
 
