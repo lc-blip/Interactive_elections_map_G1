@@ -10,7 +10,7 @@ E as dependências necessárias:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
  | *NOTA*                                                                                                                                     |
- | Todos os comandos que partilhamos devem ser executados a partir da raiz do repositório, ou adaptados cosuante a localização no repositório |
+ | Todos os comandos que partilhamos devem ser executados a partir da raiz do repositório, ou adaptados consoante a localização no repositório |
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 # 1. Criar a Base de Dados 
@@ -32,7 +32,7 @@ Download e unzip dos ficheiros da CAOP:
     unzip CAOP_RAM_2024_1-gpkg.zip
 --------------------------------------------------------------------------------
  |Colocar na *root* do repositório:                                           |
- |    - as pastas extraidas (ex:CAOP_Continente_2024_1-gpkg) com os ficheiros |
+ |    - as pastas extraídas (ex:CAOP_Continente_2024_1-gpkg) com os ficheiros |
  | OU                                                                         |
  |    - os ficheiros (ex:ArqAcores_GCentral_GOriental_CAOP2024_1.gpkg)        |
 --------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ Este passo extrai os polígonos dos distritos e municípios em formato WKT e gua
     >> python etl/built_geometry.py
 
 -------------------------------------------------------------------------------------------------------------------------------
- | *Atenção:* se correr novamente etl.py, terá tambem de correr novamente built_geometry para a base de dados estar completa | 
+ | *Atenção:* se correr novamente etl.py, terá também de correr novamente built_geometry para a base de dados estar completa | 
 -------------------------------------------------------------------------------------------------------------------------------
 
 # 3. Iniciar a Aplicação Gráfica
@@ -55,11 +55,11 @@ Após a base de dados estar completa com dados e geometria, pode iniciar a inter
  | *Funcionalidades da GUI*                                                                                                                           |
  | Mapa Interativo:                                                                                                                                   |
  |   - Clique num distrito para fazer zoom e ver os municípios desse distrito. Clique no botão "Back" para retornar à vista nacional.                 |
- |    - Num distrito, clique sobre um municipio para ver os resultados dinâmicos correspondentes.                                                     |
+ |    - Num distrito, clique sobre um município para ver os resultados dinâmicos correspondentes.                                                     |
  |                                                                                                                                                    |
  | Resultados Dinâmicos: Ao selecionar um distrito, a tabela mostra os votos e mandatos, enquanto o gráfico de barras destaca a distribuição de votos.|
  |                                                                                                                                                    |
- | Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem exta de votos.                                                         |
+ | Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem extra de votos.                                                         |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
