@@ -3,7 +3,7 @@ import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
-
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -195,13 +195,15 @@ class App:
         header = tk.Frame(self.root, bg="#f0f0f0", height=50)
         header.pack(fill="x", side="top")
 
-        self.back_btn = tk.Button(header, text="⬅ Voltar ao Mapa Geral",
+        self.back_btn = tk.Button(header, text=" Back ",
                                  state="disabled", command=self.on_back,
                                  font=("Arial", 10))
         self.back_btn.pack(side="left", padx=10, pady=10)
 
         self.title_lbl = tk.Label(header, font=("Arial", 16, "bold"), bg="#f0f0f0")
         self.title_lbl.pack(side="left", expand=True)
+        self.export_button = tk.Button(header, text = " CSV ", command=self.on_export_csv, font=("Arial", 10), state="disabled")
+        self.export_button.pack(side="right", padx=10, pady=10)
 
         # Content Area
         self.main_container = tk.Frame(self.root)
@@ -273,6 +275,7 @@ class App:
                         outline=OUTLINE_COLOR,
                         activefill="#5da5da" # Feedback visual ao passar o rato
                     )
+                    #zoom by click
                     self.canvas.tag_bind(
                         pid, "<Button-1>",
                         lambda e, c=code, n=info["name"]:
@@ -281,7 +284,7 @@ class App:
 
     def show_district(self, code, name):
         self.level = "municipalities"
-        self.back_btn.config(state="normal")
+        self.back_btn.config(state="normal")#para nao entrar antes na funcao on_back mesmo ao clical no mapa
         self.title_lbl.config(text=f"Distrito:{name}")
 
         self.update_results(f"{name}", votes_by_district(code))
@@ -337,7 +340,9 @@ class App:
         self.clear_results() 
         if self.current_fig:
             plt.close(self.current_fig) # Explicitly close the figure 
-
+        self.current_rows = rows      # Guarda dados completos
+        self.current_title = title    # Guarda título para nome ficheiro
+        self.export_button.config(state="normal")  # Ativa botão export
         if not rows:
             tk.Label(self.results_frame, text="Sem dados para esta seleção").pack()
             return
@@ -359,14 +364,12 @@ class App:
         self.tree.column("seats", width=80, anchor="center")
 
         for r in rows:
-            # Assuming r is (Detailed_Name, Votes, Mandates)
             self.tree.insert("", "end", values=r)
-        
         self.tree.pack(fill="x", expand=True)
 
        # 3. Create the Chart
-        labels = [r[0] for r in rows[:10]]
-        votes = [r[1] for r in rows[:10]]
+        labels = [r[0] for r in rows] # tranca aos 10
+        votes = [r[1] for r in rows]
 
         # Criar um Label do Tkinter para o título (evita que o Matplotlib o corte)
         chart_title = tk.Label(self.results_frame, text=f"Votos: {title}", 
@@ -374,17 +377,13 @@ class App:
         chart_title.pack()
 
         # Criar a figura com margens automáticas (tight_layout)
-        fig, ax = plt.subplots(figsize=(4.5, 4), dpi=90) # Ajuste o DPI se necessário
+        fig, ax = plt.subplots(figsize=(5.5, 6), dpi=90) # Ajuste o DPI se necessário
         self.current_fig = fig 
         
         colors = BAR_COLORS[:len(labels)]
         ax.barh(labels[::-1], votes[::-1], color=colors[::-1])
-        
-        # Remover o título de dentro do Matplotlib para ganhar espaço
-        # ax.set_title(...) <- Remova esta linha
-        
         ax.tick_params(axis='both', which='major', labelsize=8) # Letras menores nas barras
-        fig.tight_layout(pad=2.0) # Ajusta as margens para não cortar as legendas à esquerda
+        #fig.tight_layout(pad=2.0) # Ajusta as margens para não cortar as legendas à esquerda
 
         canvas = FigureCanvasTkAgg(fig, master=self.results_frame)
         canvas.draw()
@@ -393,6 +392,31 @@ class App:
     def on_back(self):
         if self.level == "municipalities":
             self.draw_districts()
+
+    def on_export_csv(self):
+        if not hasattr(self, 'current_rows') or not self.current_rows:
+            return
+        
+        import pandas as pd
+        
+        # Detecta número de colunas dinamicamente
+        num_cols = len(self.current_rows[0]) if self.current_rows else 0
+        
+        if num_cols == 2:
+            df = pd.DataFrame(self.current_rows, columns=["Partido", "Votos"])
+        elif num_cols == 3:
+            df = pd.DataFrame(self.current_rows, columns=["Partido", "Votos", "Mandatos"])
+        else:
+            print("Formato de dados inválido")
+            return
+        
+        if self.level == "municipalities":
+            filename = f"resultados_{self.current_title}.csv"
+        else:
+            filename = f"resultados_portugal.csv"
+        
+        df.to_csv(filename, index=False, encoding='utf-8')
+        print(f"Exportado: {filename}")
 
 
 if __name__ == "__main__":
