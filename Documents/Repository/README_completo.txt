@@ -33,7 +33,9 @@ Download dos ficheiros da CAOP:
 --------------------------------------------------------------------------------
 Este passo extrai os polígonos dos distritos e municípios em formato WKT e guarda-os na base de dados para serem usados pelo mapa.
     >> python etl/built_geometry.py
-
+-------------------------------------------------------------------------------------------------------------------------------
+ | *Atenção:* se correr novamente etl.py, terá tambem de correr novamente built_geometry para a base de dados estar completa | 
+-------------------------------------------------------------------------------------------------------------------------------
 # 3. Iniciar a Aplicação Gráfica
 
 Após a base de dados estar completa com dados e geometria, pode iniciar a interface:
@@ -50,3 +52,4 @@ Após a base de dados estar completa com dados e geometria, pode iniciar a inter
  |                                                                                                                                                    |
  | Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem exta de votos.                                                         |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+
