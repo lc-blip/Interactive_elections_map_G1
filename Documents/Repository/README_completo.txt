@@ -23,8 +23,13 @@ Resultado: Criação do ficheiro /db/elections.db.
 
 # 2. Integrar Geometria WKT
 
-Download dos ficheiros da CAOP:
-    https://www.dgterritorio.gov.pt/cartografia/cartografia-tematica/caop
+Download e unzip dos ficheiros da CAOP:
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_Continente_2024_1-gpkg.zip
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_RAA_2024_1-gpkg.zip
+    wget https://geo2.dgterritorio.gov.pt/caop/CAOP_RAM_2024_1-gpkg.zip
+    unzip CAOP_Continente_2024_1-gpkg.zip
+    unzip CAOP_RAA_2024_1-gpkg.zip
+    unzip CAOP_RAM_2024_1-gpkg.zip
 --------------------------------------------------------------------------------
  |Colocar na *root* do repositório:                                           |
  |    - as pastas extraidas (ex:CAOP_Continente_2024_1-gpkg) com os ficheiros |
@@ -56,5 +61,6 @@ Após a base de dados estar completa com dados e geometria, pode iniciar a inter
  |                                                                                                                                                    |
  | Interatividade: Passe o rato sobre as barras do gráfico para ver a contagem exta de votos.                                                         |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
